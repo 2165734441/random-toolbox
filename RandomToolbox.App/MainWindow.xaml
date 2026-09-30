@@ -1,0 +1,319 @@
+<Window x:Class="RandomToolbox.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="随机工具箱" MinWidth="980" MinHeight="640" WindowStartupLocation="CenterScreen"
+        Closing="Window_Closing" Loaded="Window_Loaded" SizeChanged="Window_SizeChanged">
+    <Window.Resources>
+        <Style TargetType="Button">
+            <Setter Property="Margin" Value="4"/>
+            <Setter Property="Padding" Value="14,8"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="#2563EB"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+        <Style x:Key="LightButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Background" Value="#E5E7EB"/>
+            <Setter Property="Foreground" Value="#111827"/>
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="Margin" Value="4"/>
+            <Setter Property="Padding" Value="8"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="BorderBrush" Value="#CBD5E1"/>
+        </Style>
+        <Style TargetType="ComboBox">
+            <Setter Property="Margin" Value="4"/>
+            <Setter Property="Padding" Value="6"/>
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+        <Style TargetType="CheckBox">
+            <Setter Property="Margin" Value="6"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#111827"/>
+        </Style>
+        <Style x:Key="LabelText" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Foreground" Value="#475569"/>
+            <Setter Property="Margin" Value="6,10,6,2"/>
+        </Style>
+        <Style x:Key="Panel" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="18"/>
+            <Setter Property="Margin" Value="0,0,0,14"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid Background="#F5F7FB">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Column="0" Background="#111827">
+            <DockPanel Margin="14">
+                <StackPanel DockPanel.Dock="Top">
+                    <TextBlock Text="随机工具箱" Foreground="White" FontSize="24" FontWeight="SemiBold" Margin="8,10,8,20"/>
+                    <ListBox x:Name="NavList" SelectionChanged="NavList_SelectionChanged" Background="Transparent" BorderThickness="0" Foreground="White">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Setter Property="Margin" Value="0,3"/>
+                                <Setter Property="Padding" Value="12,10"/>
+                                <Setter Property="FontSize" Value="15"/>
+                                <Setter Property="Cursor" Value="Hand"/>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                        <ListBoxItem Content="随机数字"/>
+                        <ListBoxItem Content="骰子"/>
+                        <ListBoxItem Content="抽签"/>
+                        <ListBoxItem Content="随机排序"/>
+                        <ListBoxItem Content="历史记录"/>
+                        <ListBoxItem Content="预设管理"/>
+                        <ListBoxItem Content="设置"/>
+                    </ListBox>
+                </StackPanel>
+                <StackPanel DockPanel.Dock="Bottom">
+                    <TextBlock Text="快捷随机" Foreground="#CBD5E1" FontSize="13" Margin="8,12,8,6"/>
+                    <WrapPanel>
+                        <Button Style="{StaticResource LightButton}" Content="1-10" Click="Quick_Click" Tag="1-10"/>
+                        <Button Style="{StaticResource LightButton}" Content="1-100" Click="Quick_Click" Tag="1-100"/>
+                        <Button Style="{StaticResource LightButton}" Content="1-1000" Click="Quick_Click" Tag="1-1000"/>
+                        <Button Style="{StaticResource LightButton}" Content="硬币" Click="Quick_Click" Tag="coin"/>
+                        <Button Style="{StaticResource LightButton}" Content="Yes/No" Click="Quick_Click" Tag="yesno"/>
+                        <Button Style="{StaticResource LightButton}" Content="D6" Click="Quick_Click" Tag="d6"/>
+                        <Button Style="{StaticResource LightButton}" Content="D20" Click="Quick_Click" Tag="d20"/>
+                    </WrapPanel>
+                    <TextBlock x:Name="QuickResultText" Text="" Foreground="White" FontSize="18" FontWeight="SemiBold" Margin="8,10"/>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <Grid Grid.Column="1" Margin="24">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <TextBlock x:Name="PageTitle" Text="随机数字" FontSize="28" FontWeight="SemiBold" Margin="0,0,0,18"/>
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                <Grid>
+                    <StackPanel x:Name="PageNumber">
+                        <Border Style="{StaticResource Panel}">
+                            <StackPanel>
+                                <TextBlock Text="生成设置" FontSize="18" FontWeight="SemiBold"/>
+                                <UniformGrid Columns="3">
+                                    <StackPanel><TextBlock Style="{StaticResource LabelText}" Text="最小值"/><TextBox x:Name="NumberMinBox"/></StackPanel>
+                                    <StackPanel><TextBlock Style="{StaticResource LabelText}" Text="最大值"/><TextBox x:Name="NumberMaxBox"/></StackPanel>
+                                    <StackPanel><TextBlock Style="{StaticResource LabelText}" Text="生成数量"/><TextBox x:Name="NumberCountBox"/></StackPanel>
+                                </UniformGrid>
+                                <WrapPanel Margin="0,8,0,0">
+                                    <CheckBox x:Name="NumberAllowRepeatCheck" Content="允许重复"/>
+                                    <CheckBox x:Name="NumberIntegerCheck" Content="生成整数" Checked="NumberIntegerCheck_Changed" Unchecked="NumberIntegerCheck_Changed"/>
+                                    <TextBlock Style="{StaticResource LabelText}" Text="小数位数"/>
+                                    <ComboBox x:Name="NumberDecimalCombo" Width="90">
+                                        <ComboBoxItem Content="0"/><ComboBoxItem Content="1"/><ComboBoxItem Content="2"/><ComboBoxItem Content="3"/><ComboBoxItem Content="4"/><ComboBoxItem Content="5"/><ComboBoxItem Content="6"/>
+                                    </ComboBox>
+                                    <TextBlock Style="{StaticResource LabelText}" Text="排序"/>
+                                    <ComboBox x:Name="NumberSortCombo" Width="150">
+                                        <ComboBoxItem Content="保持随机顺序"/><ComboBoxItem Content="升序"/><ComboBoxItem Content="降序"/>
+                                    </ComboBox>
+                                </WrapPanel>
+                                <WrapPanel Margin="0,10,0,0">
+                                    <Button Content="1-10" Click="NumberRange_Click" Tag="1,10"/>
+                                    <Button Content="1-100" Click="NumberRange_Click" Tag="1,100"/>
+                                    <Button Content="1-1000" Click="NumberRange_Click" Tag="1,1000"/>
+                                    <Button Content="0-100" Click="NumberRange_Click" Tag="0,100"/>
+                                    <Button Style="{StaticResource LightButton}" Content="保存为预设" Click="SavePreset_Click" Tag="随机数字"/>
+                                </WrapPanel>
+                                <WrapPanel Margin="0,10,0,0">
+                                    <Button Content="生成" Click="GenerateNumbers_Click"/>
+                                    <Button Content="重新生成" Click="GenerateNumbers_Click"/>
+                                    <Button Style="{StaticResource LightButton}" Content="复制全部结果" Click="CopyText_Click" Tag="NumberResultBox"/>
+                                    <Button Style="{StaticResource LightButton}" Content="清空结果" Click="ClearResult_Click" Tag="NumberResultBox"/>
+                                </WrapPanel>
+                            </StackPanel>
+                        </Border>
+                        <Border Style="{StaticResource Panel}">
+                            <TextBox x:Name="NumberResultBox" MinHeight="220" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
+                        </Border>
+                    </StackPanel>
+
+                    <StackPanel x:Name="PageDice" Visibility="Collapsed">
+                        <Border Style="{StaticResource Panel}">
+                            <StackPanel>
+                                <TextBlock Text="骰子" FontSize="18" FontWeight="SemiBold"/>
+                                <UniformGrid Columns="3">
+                                    <StackPanel><TextBlock Style="{StaticResource LabelText}" Text="骰子面数"/><ComboBox x:Name="DiceSidesCombo" IsEditable="True"/></StackPanel>
+                                    <StackPanel><TextBlock Style="{StaticResource LabelText}" Text="骰子数量"/><TextBox x:Name="DiceCountBox"/></StackPanel>
+                                    <StackPanel><TextBlock Style="{StaticResource LabelText}" Text="快捷小游戏"/><Button Content="抛硬币" Click="Coin_Click"/></StackPanel>
+                                </UniformGrid>
+                                <WrapPanel Margin="0,10,0,0">
+                                    <Button Content="投掷" Click="RollDice_Click"/>
+                                    <Button Content="重新投掷" Click="RollDice_Click"/>
+                                    <Button Style="{StaticResource LightButton}" Content="复制结果" Click="CopyText_Click" Tag="DiceResultBox"/>
+                                    <Button Style="{StaticResource LightButton}" Content="清空" Click="ClearResult_Click" Tag="DiceResultBox"/>
+                                    <Button Style="{StaticResource LightButton}" Content="保存为预设" Click="SavePreset_Click" Tag="骰子"/>
+                                </WrapPanel>
+                            </StackPanel>
+                        </Border>
+                        <Expander Header="高级骰子表达式" IsExpanded="False" Margin="0,0,0,14">
+                            <Border Style="{StaticResource Panel}" Margin="0,8,0,0">
+                                <StackPanel>
+                                    <UniformGrid Columns="3">
+                                        <StackPanel><TextBlock Style="{StaticResource LabelText}" Text="表达式"/><TextBox x:Name="DiceExpressionBox"/></StackPanel>
+                                        <StackPanel><TextBlock Style="{StaticResource LabelText}" Text="结果规则"/><ComboBox x:Name="DiceKeepCombo"><ComboBoxItem Content="正常"/><ComboBoxItem Content="取最高值"/><ComboBoxItem Content="取最低值"/></ComboBox></StackPanel>
+                                        <StackPanel><TextBlock Style="{StaticResource LabelText}" Text="操作"/><Button Content="计算表达式" Click="RollDiceExpression_Click"/></StackPanel>
+                                    </UniformGrid>
+                                </StackPanel>
+                            </Border>
+                        </Expander>
+                        <Border Style="{StaticResource Panel}">
+                            <TextBox x:Name="DiceResultBox" MinHeight="240" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
+                        </Border>
+                    </StackPanel>
+
+                    <StackPanel x:Name="PageDraw" Visibility="Collapsed">
+                        <Border Style="{StaticResource Panel}">
+                            <StackPanel>
+                                <TextBlock Text="抽签项目（一行一个）" FontSize="18" FontWeight="SemiBold"/>
+                                <TextBox x:Name="DrawItemsBox" MinHeight="180" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
+                                <WrapPanel>
+                                    <TextBlock Style="{StaticResource LabelText}" Text="抽取数量"/>
+                                    <TextBox x:Name="DrawCountBox" Width="90"/>
+                                    <CheckBox x:Name="DrawAllowRepeatCheck" Content="允许重复抽取"/>
+                                    <Button Content="随机抽取" Click="Draw_Click"/>
+                                    <Button Content="重新开始" Click="DrawRestart_Click"/>
+                                    <Button Style="{StaticResource LightButton}" Content="恢复全部" Click="DrawRestore_Click"/>
+                                    <Button Style="{StaticResource LightButton}" Content="复制结果" Click="CopyText_Click" Tag="DrawResultBox"/>
+                                    <Button Style="{StaticResource LightButton}" Content="清空结果" Click="ClearResult_Click" Tag="DrawResultBox"/>
+                                    <Button Style="{StaticResource LightButton}" Content="保存为预设" Click="SavePreset_Click" Tag="抽签"/>
+                                </WrapPanel>
+                            </StackPanel>
+                        </Border>
+                        <Border Style="{StaticResource Panel}">
+                            <TextBox x:Name="DrawResultBox" MinHeight="220" TextWrapping="Wrap" AcceptsReturn="True"/>
+                        </Border>
+                    </StackPanel>
+
+                    <StackPanel x:Name="PageSort" Visibility="Collapsed">
+                        <Border Style="{StaticResource Panel}">
+                            <StackPanel>
+                                <TextBlock Text="随机排序 / 随机分组（一行一个）" FontSize="18" FontWeight="SemiBold"/>
+                                <TextBox x:Name="SortItemsBox" MinHeight="180" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
+                                <WrapPanel>
+                                    <Button Content="随机排序" Click="Shuffle_Click"/>
+                                    <Button Content="重新随机" Click="Shuffle_Click"/>
+                                    <Button Style="{StaticResource LightButton}" Content="复制排序结果" Click="CopyText_Click" Tag="SortResultBox"/>
+                                    <Button Style="{StaticResource LightButton}" Content="清空" Click="ClearResult_Click" Tag="SortResultBox"/>
+                                    <Button Style="{StaticResource LightButton}" Content="保存为预设" Click="SavePreset_Click" Tag="随机排序"/>
+                                </WrapPanel>
+                            </StackPanel>
+                        </Border>
+                        <Border Style="{StaticResource Panel}">
+                            <StackPanel>
+                                <TextBlock Text="随机分组" FontSize="18" FontWeight="SemiBold"/>
+                                <WrapPanel>
+                                    <ComboBox x:Name="GroupModeCombo" Width="150"><ComboBoxItem Content="按组数分组"/><ComboBoxItem Content="按每组人数分组"/></ComboBox>
+                                    <TextBox x:Name="GroupValueBox" Width="90"/>
+                                    <Button Content="生成分组" Click="Group_Click"/>
+                                </WrapPanel>
+                            </StackPanel>
+                        </Border>
+                        <Border Style="{StaticResource Panel}">
+                            <TextBox x:Name="SortResultBox" MinHeight="240" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
+                        </Border>
+                    </StackPanel>
+
+                    <StackPanel x:Name="PageHistory" Visibility="Collapsed">
+                        <Border Style="{StaticResource Panel}">
+                            <StackPanel>
+                                <TextBlock Text="历史记录" FontSize="18" FontWeight="SemiBold"/>
+                                <WrapPanel>
+                                    <TextBox x:Name="HistorySearchBox" Width="260" TextChanged="HistoryFilter_Changed"/>
+                                    <ComboBox x:Name="HistoryTypeCombo" Width="150" SelectionChanged="HistoryFilter_Changed">
+                                        <ComboBoxItem Content="全部"/><ComboBoxItem Content="随机数字"/><ComboBoxItem Content="骰子"/><ComboBoxItem Content="抽签"/><ComboBoxItem Content="随机排序"/><ComboBoxItem Content="随机分组"/>
+                                    </ComboBox>
+                                    <Button Style="{StaticResource LightButton}" Content="复制选中" Click="CopyHistory_Click"/>
+                                    <Button Style="{StaticResource LightButton}" Content="删除选中" Click="DeleteHistory_Click"/>
+                                    <Button Style="{StaticResource LightButton}" Content="清空全部" Click="ClearHistory_Click"/>
+                                </WrapPanel>
+                            </StackPanel>
+                        </Border>
+                        <DataGrid x:Name="HistoryGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" MinHeight="420">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="时间" Binding="{Binding Time}" Width="150"/>
+                                <DataGridTextColumn Header="功能" Binding="{Binding Type}" Width="90"/>
+                                <DataGridTextColumn Header="设置" Binding="{Binding Settings}" Width="220"/>
+                                <DataGridTextColumn Header="结果" Binding="{Binding Result}" Width="*"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </StackPanel>
+
+                    <StackPanel x:Name="PagePresets" Visibility="Collapsed">
+                        <Border Style="{StaticResource Panel}">
+                            <StackPanel>
+                                <TextBlock Text="预设管理" FontSize="18" FontWeight="SemiBold"/>
+                                <WrapPanel>
+                                    <TextBox x:Name="PresetNameBox" Width="220"/>
+                                    <ComboBox x:Name="PresetTypeCombo" Width="150"><ComboBoxItem Content="随机数字"/><ComboBoxItem Content="骰子"/><ComboBoxItem Content="抽签"/><ComboBoxItem Content="随机排序"/></ComboBox>
+                                    <Button Content="添加当前设置" Click="AddPresetFromManager_Click"/>
+                                    <Button Style="{StaticResource LightButton}" Content="应用选中" Click="ApplyPreset_Click"/>
+                                    <Button Style="{StaticResource LightButton}" Content="修改选中" Click="UpdatePreset_Click"/>
+                                    <Button Style="{StaticResource LightButton}" Content="重命名" Click="RenamePreset_Click"/>
+                                    <Button Style="{StaticResource LightButton}" Content="上移" Click="MovePreset_Click" Tag="-1"/>
+                                    <Button Style="{StaticResource LightButton}" Content="下移" Click="MovePreset_Click" Tag="1"/>
+                                    <Button Style="{StaticResource LightButton}" Content="删除" Click="DeletePreset_Click"/>
+                                </WrapPanel>
+                            </StackPanel>
+                        </Border>
+                        <DataGrid x:Name="PresetGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" MinHeight="440">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="名称" Binding="{Binding Name}" Width="220"/>
+                                <DataGridTextColumn Header="类型" Binding="{Binding Type}" Width="120"/>
+                                <DataGridTextColumn Header="排序" Binding="{Binding Order}" Width="80"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </StackPanel>
+
+                    <StackPanel x:Name="PageSettings" Visibility="Collapsed">
+                        <Border Style="{StaticResource Panel}">
+                            <StackPanel>
+                                <TextBlock Text="设置" FontSize="18" FontWeight="SemiBold"/>
+                                <CheckBox x:Name="SettingOpenLastPageCheck" Content="启动时打开上次使用页面"/>
+                                <CheckBox x:Name="SettingDiceAnimationCheck" Content="骰子动画"/>
+                                <CheckBox x:Name="SettingSaveHistoryCheck" Content="保存历史记录"/>
+                                <WrapPanel>
+                                    <TextBlock Style="{StaticResource LabelText}" Text="历史记录最大数量"/>
+                                    <ComboBox x:Name="SettingHistoryLimitCombo" Width="130">
+                                        <ComboBoxItem Content="100"/><ComboBoxItem Content="500"/><ComboBoxItem Content="1000"/><ComboBoxItem Content="无限"/>
+                                    </ComboBox>
+                                    <TextBlock Style="{StaticResource LabelText}" Text="主题"/>
+                                    <ComboBox x:Name="SettingThemeCombo" Width="130">
+                                        <ComboBoxItem Content="浅色"/><ComboBoxItem Content="深色"/><ComboBoxItem Content="跟随系统"/>
+                                    </ComboBox>
+                                    <TextBlock Style="{StaticResource LabelText}" Text="随机模式：标准随机"/>
+                                </WrapPanel>
+                                <WrapPanel Margin="0,12,0,0">
+                                    <Button Content="保存设置" Click="SaveSettings_Click"/>
+                                    <Button Style="{StaticResource LightButton}" Content="清空所有历史记录" Click="ClearHistory_Click"/>
+                                    <Button Style="{StaticResource LightButton}" Content="恢复默认设置" Click="ResetSettings_Click"/>
+                                </WrapPanel>
+                            </StackPanel>
+                        </Border>
+                        <Border Style="{StaticResource Panel}">
+                            <TextBlock Text="数据使用 JSON 保存在本机 AppData 目录。配置文件不存在时会自动创建，损坏时会自动备份并恢复默认配置。" TextWrapping="Wrap" FontSize="14"/>
+                        </Border>
+                    </StackPanel>
+                </Grid>
+            </ScrollViewer>
+            <TextBlock Grid.Row="2" x:Name="StatusText" Foreground="#047857" Margin="0,10,0,0"/>
+        </Grid>
+    </Grid>
+</Window>
