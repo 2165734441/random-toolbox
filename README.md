@@ -70,6 +70,20 @@ RandomToolbox.App\bin\Release\net8.0-windows\win-x64\publish\
 
 Run `随机工具箱.exe` from that directory. The EXE is self-contained and can be copied to another compatible Windows x64 computer.
 
+## Download the Ready-to-Run EXE
+
+The repository includes a ready-to-run build at:
+
+```text
+releases/RandomToolbox-win-x64.exe
+```
+
+SHA-256:
+
+```text
+C0C7D35C4C5DC8BD41B74592B0E51F8ECCE66F6EA7089BA6A5D1742AADEFF858
+```
+
 ## Local Data
 
 The application stores its JSON data at:
